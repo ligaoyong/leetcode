@@ -237,12 +237,12 @@ public class Solution1 {
             return list;
         Stack<TreeNode> stack = new Stack<>();
         TreeNode p = root;
-        while (!stack.empty() || p != null){
-            while (p != null){
+        while (!stack.empty() || p != null) {
+            while (p != null) {
                 stack.push(p);
                 p = p.left;
             }
-            if (!stack.empty()){
+            if (!stack.empty()) {
                 TreeNode pop = stack.pop();
                 list.add(pop.val);
                 p = pop.right;
@@ -252,7 +252,7 @@ public class Solution1 {
     }
 
     @Test
-    public void testpreorderTraversal(){
+    public void testpreorderTraversal() {
         TreeNode node = new TreeNode(1);
         TreeNode node1 = new TreeNode(2);
         node.right = node1;
@@ -264,6 +264,7 @@ public class Solution1 {
 
     /**
      * 核心思路：必须找到每次循环需要处理的节点或子树(P) 可以借助栈的结构保存待处理的节点
+     *
      * @param root
      * @return
      */
@@ -273,12 +274,12 @@ public class Solution1 {
             return list;
         Stack<TreeNode> stack = new Stack<>();
         TreeNode p = root;
-        while (!stack.empty() || p != null){
-            if (p != null){
+        while (!stack.empty() || p != null) {
+            if (p != null) {
                 list.add(p.val);
                 stack.push(p.right);
                 p = p.left;
-            }else
+            } else
                 p = stack.pop();
         }
         return list;
@@ -292,12 +293,12 @@ public class Solution1 {
             return list;
         Stack<TreeNode> stack = new Stack<>();
         TreeNode p = root;
-        while (!stack.empty() || p != null){
-            if (p != null){
+        while (!stack.empty() || p != null) {
+            if (p != null) {
                 list.add(p.val);
                 stack.push(p.left);
                 p = p.right;
-            }else
+            } else
                 p = stack.pop();
         }
         Collections.reverse(list);
@@ -310,25 +311,24 @@ public class Solution1 {
      * 要求使用原地算法，并且不改变节点的值
      * 例如：
      * 对于给定的单链表{1,2,3,4}，将其重新排序为{1,4,2,3}.
-     * @param head
      *
-     * 思路：// 快满指针找到中间节点 // 拆分链表，并反转中间节点之后的链表    // 合并两个链表
+     * @param head 思路：// 快满指针找到中间节点 // 拆分链表，并反转中间节点之后的链表    // 合并两个链表
      */
     public void reorderList(ListNode head) {
-        if (head ==null || head.next == null)
+        if (head == null || head.next == null)
             return;
         ListNode fast = head;
         ListNode slow = head;
 
         // 快满指针找到中间节点
-        while (slow.next != null && fast.next != null && fast.next.next != null){
+        while (slow.next != null && fast.next != null && fast.next.next != null) {
             fast = fast.next.next;
             slow = slow.next;
         }
         // 拆分链表，并反转中间节点之后的链表
         ListNode l2 = slow;
         ListNode head2 = new ListNode(0);
-        while (l2.next != null){
+        while (l2.next != null) {
             ListNode p = l2.next;
             l2.next = p.next;
             p.next = head2.next;
@@ -338,20 +338,21 @@ public class Solution1 {
         // 合并两个链表
         ListNode l1 = head.next;
         ListNode l11 = head;
-        while (l1 != null && head2.next != null){
+        while (l1 != null && head2.next != null) {
             ListNode q = head2.next;
             q.next = l1.next;
             l1.next = q;
             l1 = q.next;
             l11 = q;
         }
-        if (l1 == null){
+        if (l1 == null) {
             l11.next = head2.next;
             head2.next = null;
         }
     }
+
     @Test
-    public void testreorderList(){
+    public void testreorderList() {
         ListNode head = new ListNode(0);
         ListNode node1 = new ListNode(1);
         ListNode node2 = new ListNode(2);
@@ -362,30 +363,128 @@ public class Solution1 {
         System.out.println(head);
     }
 
-    //对于一个给定的链表，返回环的入口节点，如果没有环，返回null
-
     /**
+     * 对于一个给定的链表，返回环的入口节点，如果没有环，返回null
      * 思路 ：利用快慢指针相遇  指针相差的步数就是环的长度
+     *
      * @param head
      * @return
      */
     public ListNode detectCycle(ListNode head) {
-        if(head == null || head.next == null || head.next.next == null)
+        if (head == null || head.next == null)
             return null;
-        ListNode fast = head.next.next;
-        ListNode slow = head.next;
-        int fastTmp = 2;
-        int slowTmp = 1;
-
-        while (slow != fast && fast.next != null && fast.next.next != null){
+        ListNode fast = head;
+        ListNode slow = head;
+        while (fast != null && fast.next != null) {
             fast = fast.next.next;
-            fastTmp += 2;
             slow = slow.next;
-            slowTmp += 1;
+            if (fast == slow)
+                break;
         }
-        if (slow == fast){
+        if (fast == null || fast.next == null)
+            return null;
+        slow = head;
+        while (slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return slow;
+    }
+
+    @Test
+    public void test2() {
+        HashSet<String> hashSet = new HashSet<>();
+        hashSet.add("a");
+        hashSet.add("b");
+        ArrayList<String> list = wordBreak("ab", hashSet);
+        System.out.println(list);
+    }
+
+    public ArrayList<String> wordBreak(String s, Set<String> dict) {
+        ArrayList<String> result = new ArrayList<>();
+        DFS(s, dict, result);
+        return result;
+    }
+
+    private void DFS(String s, Set<String> dict, ArrayList<String> result) {
+        if (s.equals(""))
+            return;
+        for (String d : dict) {
+            if (s.startsWith(d)) {
+                result.add(d);
+                int length = s.length();
+                String s1 = s.substring(d.length(), length);
+                DFS(s1, dict, result);
+            }
+        }
+    }
+
+    class RandomListNode {
+        int label;
+        RandomListNode next, random;
+
+        RandomListNode(int x) {
+            this.label = x;
+        }
+    }
+
+    /**
+     * 现在有一个这样的链表：链表的每一个节点都附加了一个随机指针，随机指针可能指向链表中的任意一个节点或者指向空。
+     * 请对这个链表进行深拷贝。
+     * <p>
+     * 主要思想还是先拷贝新节点，插入到原节点的后边；然后再 拷贝随机指针；最后将新节点从原链表中分离出，注意要保证原链表正常。
+     *
+     * @param head
+     * @return
+     */
+    public RandomListNode copyRandomList(RandomListNode head) {
+        if (head == null)
+            return null;
+        RandomListNode p, copy;
+        //复制节点
+        for (p = head; p != null; p = p.next) {
+            copy = new RandomListNode(p.label);
+            copy.next = p.next;
+            p = p.next = copy;
+        }
+        //扫描随机节点处理
+        for (p = head; p != null; p = copy.next){
+            copy = p.next;
+            copy.random = p.random != null ? p.random.next : null;
 
         }
-        return null;
+        //从链表中分离出来
+        for (p = head, head = copy = p.next; p != null; ) {
+            p = p.next = copy.next;
+            copy = copy.next = p
+                    != null ? p.next : null;
+        }
+        return head;
+    }
+
+    //求二叉树的最大路径和
+    Integer max = Integer.MIN_VALUE;
+    public int maxPathSum(TreeNode root) {
+        if (root == null)
+            return 0;
+        maxPath(root);
+        return max;
+    }
+    private Integer maxPath(TreeNode root) {
+        if (root == null)
+            return 0;
+        int left = Math.max(maxPath(root.left),0);
+        int right = Math.max(maxPath(root.right),0);
+        if (left+right+root.val > max)
+            max = left + right + root.val;
+        return Math.max(left,right)+root.val;
+    }
+
+    @Test
+    public void test3(){
+        TreeNode root = new TreeNode(2);
+        TreeNode left = new TreeNode(-1);
+        root.left = left;
+        System.out.println(maxPathSum(root));
     }
 }
