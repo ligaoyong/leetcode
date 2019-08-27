@@ -448,7 +448,7 @@ public class Solution1 {
             p = p.next = copy;
         }
         //扫描随机节点处理
-        for (p = head; p != null; p = copy.next){
+        for (p = head; p != null; p = copy.next) {
             copy = p.next;
             copy.random = p.random != null ? p.random.next : null;
 
@@ -464,27 +464,124 @@ public class Solution1 {
 
     //求二叉树的最大路径和
     Integer max = Integer.MIN_VALUE;
+
     public int maxPathSum(TreeNode root) {
         if (root == null)
             return 0;
         maxPath(root);
         return max;
     }
+
     private Integer maxPath(TreeNode root) {
         if (root == null)
             return 0;
-        int left = Math.max(maxPath(root.left),0);
-        int right = Math.max(maxPath(root.right),0);
-        if (left+right+root.val > max)
+        int left = Math.max(maxPath(root.left), 0);
+        int right = Math.max(maxPath(root.right), 0);
+        if (left + right + root.val > max)
             max = left + right + root.val;
-        return Math.max(left,right)+root.val;
+        return Math.max(left, right) + root.val;
     }
 
     @Test
-    public void test3(){
+    public void test3() {
         TreeNode root = new TreeNode(2);
         TreeNode left = new TreeNode(-1);
         root.left = left;
         System.out.println(maxPathSum(root));
+    }
+
+    public class TreeLinkNode {
+        int val;
+        TreeLinkNode left, right, next;
+
+        TreeLinkNode(int x) {
+            val = x;
+        }
+    }
+
+    /**
+     * 填充所有节点的next指针，指向它右兄弟节点。如果没有右兄弟节点，则应该将next指针设置为NULL。
+     * 初始时，所有的next指针都为NULL
+     * 注意：
+     * 你只能使用常量级的额外内存空间
+     * 可以假设给出的二叉树是一个完美的二叉树(即，所有叶子节点都位于同一层，而且每个父节点都有两个孩子节点)。
+     *
+     * @param root
+     */
+    public void connect(TreeLinkNode root) {
+        if (root == null)
+            return;
+        connectDFS(root);
+    }
+
+    private void connectDFS(TreeLinkNode root) {
+        if (root == null)
+            return;
+        if (root.left != null)
+            root.left.next = root.right;
+        if (root.right != null && root.next != null)
+            root.right.next = root.next.left;
+        connectDFS(root.left);
+        connectDFS(root.right);
+    }
+
+    //树不是完美二叉树的情况
+    private void connect1(TreeLinkNode root) {
+        while (root != null) {
+            TreeLinkNode tmpLevelFirst = new TreeLinkNode(0); //每一层的第一个节点
+            TreeLinkNode cur = tmpLevelFirst; //处理每一层时的当前节点
+            while (root != null) {
+                if (root.left != null) {
+                    cur.next = root.left;
+                    cur = cur.next;
+                }
+                if (root.right != null) {
+                    cur.next = root.right;
+                    cur = cur.next;
+                }
+                root = root.next;
+            }
+            root = tmpLevelFirst.next;
+        }
+    }
+
+    /**
+     * 给定一个二叉树和一个值sum，判断是否有从根节点到叶子节点的节点值之和等于sum的路径
+     * @param root
+     * @param sum
+     * @return
+     * 思路  递归求解的思路
+     */
+    public boolean hasPathSum(TreeNode root, int sum) {
+        if (root == null)
+            return false;
+        if (root.left == null && root.right == null && sum - root.val == 0)
+            return true;
+        return hasPathSum(root.left,sum - root.val) || hasPathSum(root.right,sum - root.val);
+    }
+
+    /**
+     * 给定一个二叉树和一个值sum，请找出所有的根节点到叶子节点的节点值之和等于sum的路径，
+     * @param root
+     * @param sum
+     * @return
+     */
+    public ArrayList<ArrayList<Integer>> pathSum(TreeNode root, int sum) {
+        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+        ArrayList<Integer> list = new ArrayList<>();
+        pathSumDFS(root,sum,result,list);
+        return result;
+    }
+    private void pathSumDFS(TreeNode root, int sum,
+                            ArrayList<ArrayList<Integer>> result,ArrayList<Integer> list){
+        if (root == null)
+            return;
+        list.add(root.val);
+        if (root.left == null && root.right == null && sum - root.val == 0){
+            result.add(list);
+            return;
+        }
+        pathSumDFS(root.left, sum - root.val, result,new ArrayList<>(list));    //要创建新的list传递给下一层
+        pathSumDFS(root.right,sum-root.val, result,new ArrayList<>(list));
     }
 }
