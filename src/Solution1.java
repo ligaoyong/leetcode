@@ -547,21 +547,22 @@ public class Solution1 {
 
     /**
      * 给定一个二叉树和一个值sum，判断是否有从根节点到叶子节点的节点值之和等于sum的路径
+     *
      * @param root
      * @param sum
-     * @return
-     * 思路  递归求解的思路
+     * @return 思路  递归求解的思路
      */
     public boolean hasPathSum(TreeNode root, int sum) {
         if (root == null)
             return false;
         if (root.left == null && root.right == null && sum - root.val == 0)
             return true;
-        return hasPathSum(root.left,sum - root.val) || hasPathSum(root.right,sum - root.val);
+        return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
     }
 
     /**
      * 给定一个二叉树和一个值sum，请找出所有的根节点到叶子节点的节点值之和等于sum的路径，
+     *
      * @param root
      * @param sum
      * @return
@@ -569,19 +570,44 @@ public class Solution1 {
     public ArrayList<ArrayList<Integer>> pathSum(TreeNode root, int sum) {
         ArrayList<ArrayList<Integer>> result = new ArrayList<>();
         ArrayList<Integer> list = new ArrayList<>();
-        pathSumDFS(root,sum,result,list);
+        pathSumDFS(root, sum, result, list);
         return result;
     }
+
     private void pathSumDFS(TreeNode root, int sum,
-                            ArrayList<ArrayList<Integer>> result,ArrayList<Integer> list){
+                            ArrayList<ArrayList<Integer>> result, ArrayList<Integer> list) {
         if (root == null)
             return;
         list.add(root.val);
-        if (root.left == null && root.right == null && sum - root.val == 0){
+        if (root.left == null && root.right == null && sum - root.val == 0) {
             result.add(list);
             return;
         }
-        pathSumDFS(root.left, sum - root.val, result,new ArrayList<>(list));    //要创建新的list传递给下一层
-        pathSumDFS(root.right,sum-root.val, result,new ArrayList<>(list));
+        pathSumDFS(root.left, sum - root.val, result, new ArrayList<>(list));    //要创建新的list传递给下一层
+        pathSumDFS(root.right, sum - root.val, result, new ArrayList<>(list));
+    }
+
+    /**
+     * 判断给定的二叉树是否是平衡的
+     * 在这个问题中，定义平衡二叉树为每个节点的左右两个子树高度差的绝对值不超过1的二叉树
+     *
+     * @param root
+     * @return
+     */
+    public boolean isBalanced(TreeNode root) {
+        if (root == null)
+            return true;
+        if (Math.abs(deep(root.left) - deep(root.right)) > 1)   //检查当前树是否为平衡二叉树
+            return false;
+        return isBalanced(root.left) && isBalanced(root.right); // 左右子树也必须是平衡二叉树
+    }
+
+    //求树的高度
+    private int deep(TreeNode root) {
+        if (root == null)
+            return 0;
+        int deepLeft = deep(root.left) + 1;
+        int deepRight = deep(root.right) + 1;
+        return Math.max(deepLeft, deepRight);
     }
 }
